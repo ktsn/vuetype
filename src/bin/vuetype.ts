@@ -18,9 +18,9 @@ const patterns = program.args.map(arg => {
   return path.join(arg, '**/*.vue')
 })
 
-async.concat(patterns, glob, (err, files: string[]) => {
+async.waterfall([
+  async.apply(async.concat, patterns, glob),
+  generate
+], err => {
   if (err) throw err
-  generate(files, err => {
-    if (err) throw err
-  })
 })

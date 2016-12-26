@@ -11,10 +11,11 @@ export function generate (filenames: string[], done: (err: Error) => void): void
 
   const service = new LanguageService({ declaration: true })
 
-  async.map(vueFiles,
+  async.map(
+    vueFiles,
     (file, done: Function) => {
       fs.readFile(file, 'utf8', (err, data) => {
-        if (err) done(err)
+        if (err) return done(err)
 
         const script = vueCompiler.parseComponent(data, { pad: true }).script
 
@@ -24,9 +25,10 @@ export function generate (filenames: string[], done: (err: Error) => void): void
         service.updateSrcScript(file, script.content)
 
         const dts = service.getDts(file)
-        fs.writeFile(file + '.d.ts', dts, done)
-
-        console.log('output: ' + file + '.d.ts')
+        fs.writeFile(file + '.d.ts', dts, err => {
+          console.log('output: ' + file + '.d.ts')
+          done()
+        })
       })
     },
     done
