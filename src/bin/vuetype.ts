@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import path = require('path')
 import program = require('commander')
 import async = require('async')
 import glob = require('glob')
@@ -10,10 +11,14 @@ const meta = require('../../package.json')
 
 program
   .version(meta.version)
-  .usage('<files pattern ...>')
+  .usage('<directory ...>')
   .parse(process.argv)
 
-async.concat(program.args, glob, (err, files: string[]) => {
+const patterns = program.args.map(arg => {
+  return path.join(arg, '**/*.vue')
+})
+
+async.concat(patterns, glob, (err, files: string[]) => {
   if (err) throw err
   generate(files, err => {
     if (err) throw err
