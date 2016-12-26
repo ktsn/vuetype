@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../.tmp",
+    "sourceMap": true
+  },
+  "include": [
+    "**/*.ts",
+    "../src/**/*.ts",
+    "../node_modules/@types/mocha/index.d.ts"
+  ]
+}
