@@ -1,61 +1,78 @@
-import * as ts from 'typescript'
+import ts = require('typescript')
+import { TsFileMap } from './ts-file-map'
 
-interface File {
-  version: number
-  text: string | null
+export interface Result<T> {
+  result: T | null
+  errors: string[]
 }
 
 export class LanguageService {
-  private files = {} as ts.Map<File>
+  private files = new TsFileMap()
   private tsService: ts.LanguageService
 
-  constructor (private options: ts.CompilerOptions) {
+  constructor (rootFileNames: string[], private options: ts.CompilerOptions) {
+    rootFileNames.forEach(file => {
+      this.files.registerFile(file)
+    })
+
     const serviceHost = this.makeServiceHost(options)
     this.tsService = ts.createLanguageService(serviceHost, ts.createDocumentRegistry())
   }
 
-  updateSrcScript (fileName: string, text: string): void {
-    fileName = normalize(fileName)
-
-    if (!this.files[fileName]) {
-      this.files[fileName] = { version: 0, text: null }
+  getDts (fileName: string): Result<string> {
+    // Unsupported files or not found
+    if (!this.files.canEmit(fileName)) {
+      return {
+        result: null,
+        errors: []
+      }
     }
 
-    const file = this.files[fileName]
-    file.version += 1
-    file.text = text
-  }
-
-  getDts (fileName: string): string {
-    fileName = normalize(fileName)
-
     const output = this.tsService.getEmitOutput(fileName, true)
-    return output.outputFiles
-      .filter(file => /\.d\.ts$/.test(file.name))[0].text
+
+    if (!output.emitSkipped) {
+      const result = output.outputFiles
+        .filter(file => /\.d\.ts$/.test(file.name))[0].text
+
+      return {
+        result,
+        errors: []
+      }
+    }
+
+    return {
+      result: null,
+      errors: this.collectErrorMessages(fileName)
+    }
   }
 
   private makeServiceHost (options: ts.CompilerOptions): ts.LanguageServiceHost {
     return {
-      getScriptFileNames: () => Object.keys(this.files),
-      getScriptVersion: fileName => this.files[fileName] && this.files[fileName].version.toString(),
+      getScriptFileNames: () => this.files.fileNames,
+      getScriptVersion: fileName => this.files.getVersion(fileName),
       getScriptSnapshot: fileName => {
-        if (!this.files[fileName]) return undefined
-
-        const file = this.files[fileName]
-        if (file.text === null) return undefined
-
-        return ts.ScriptSnapshot.fromString(file.text)
+        const src = this.files.getSrc(fileName)
+        return src && ts.ScriptSnapshot.fromString(src)
       },
       getCurrentDirectory: () => process.cwd(),
       getCompilationSettings: () => options,
       getDefaultLibFileName: options => ts.getDefaultLibFilePath(options)
     } as ts.LanguageServiceHost
   }
-}
 
-function normalize (fileName: string): string {
-  if (!/\.ts$/.test(fileName)) {
-    return fileName + '.ts'
+  private collectErrorMessages (fileName: string): string[] {
+    const allDiagnostics = this.tsService.getCompilerOptionsDiagnostics()
+      .concat(this.tsService.getSyntacticDiagnostics(fileName))
+      .concat(this.tsService.getSemanticDiagnostics(fileName))
+
+    return allDiagnostics.map(diagnostic => {
+      const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')
+
+      if (diagnostic.file) {
+        const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start)
+        return `[${line + 1},${character + 1}] ${message}`
+      }
+      return message
+    })
   }
-  return fileName
 }

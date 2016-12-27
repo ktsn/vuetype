@@ -16,35 +16,27 @@ function notExists(file: string) {
 }
 
 describe('generate', () => {
-  it('should output d.ts for class component in sfc', done => {
-    generate([resolve('fixtures/ts-class.vue')], err => {
-      assert.ifError(err)
+  it('should emit d.ts for class component in sfc', () => {
+    return generate([resolve('fixtures/ts-class.vue')]).then(() => {
       test('fixtures/ts-class.vue.d.ts', 'expects/ts-class.vue.d.ts')
-      done()
     })
   })
 
-  it('should output d.ts for component options in sfc', done => {
-    generate([resolve('fixtures/ts-object.vue')], err => {
-      assert.ifError(err)
+  it('should emit d.ts for component options in sfc', () => {
+    return generate([resolve('fixtures/ts-object.vue')]).then(() => {
       test('fixtures/ts-object.vue.d.ts', 'expects/ts-object.vue.d.ts')
-      done()
     })
   })
 
-  it('should not output d.ts for js', done => {
-    generate([resolve('fixtures/js.vue')], err => {
-      assert.ifError(err)
+  it('should not emit d.ts for js', () => {
+    return generate([resolve('fixtures/js.vue')]).then(() => {
       notExists('fixtures/js.vue.d.ts')
-      done()
     })
   })
 
-  it('should not output d.ts for normal ts', done => {
-    generate([resolve('fixtures/not-vue.ts')], err => {
-      assert.ifError(err)
+  it('should not emit d.ts for normal ts', () => {
+    return generate([resolve('fixtures/not-vue.ts')]).then(() => {
       notExists('fixtures/not-vue.d.ts')
-      done()
     })
   })
 })
