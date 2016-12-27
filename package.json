@@ -32,6 +32,7 @@
     "test": "rm -rf test/fixtures/*.d.ts && mocha --compilers ts:espower-typescript/guess test/*.ts"
   },
   "devDependencies": {
+    "@types/colors": "^0.6.33",
     "@types/commander": "^2.3.31",
     "@types/glob": "^5.0.30",
     "@types/mocha": "^2.2.32",
@@ -48,6 +49,7 @@
     "vue-template-compiler": "^2.1.7"
   },
   "dependencies": {
+    "colors": "^1.1.2",
     "commander": "^2.9.0",
     "glob": "^7.1.1",
     "typescript": "^2.1.4"
