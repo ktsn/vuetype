@@ -54,6 +54,12 @@ describe('generate', () => {
       notExists('fixtures/ts-error.vue.d.ts')
     })
   })
+
+  it('should emit d.ts with imported ts types', () => {
+    return gen('fixtures/import.vue', compilerOptions).then(() => {
+      test('fixtures/import.vue.d.ts', 'expects/import.vue.d.ts')
+    })
+  })
 })
 
 function normalize (str: string): string {
