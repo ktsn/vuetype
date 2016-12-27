@@ -10,6 +10,7 @@ export function generate (filenames: string[], options: ts.CompilerOptions): Pro
     .filter(file => /\.vue$/.test(file))
     .map(file => path.resolve(file))
 
+  // Should not emit if some errors are occurred
   const service = new LanguageService(vueFiles, {
     ...options,
     noEmitOnError: true
@@ -17,6 +18,8 @@ export function generate (filenames: string[], options: ts.CompilerOptions): Pro
 
   return Promise.all(
     vueFiles.map(file => {
+      // .ts suffix is needed since the compiler skips compile
+      // if the file name seems to be not supported types
       const dts = service.getDts(file + '.ts')
       const dtsPath = file + '.d.ts'
 

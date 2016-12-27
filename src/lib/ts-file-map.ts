@@ -15,6 +15,10 @@ export class TsFileMap {
     return Object.keys(this.files).filter(file => isSupportedFile(file))
   }
 
+  /**
+   * If the file does not exists or it is unsupported type,
+   * we does not try emit output or the compiler throws an error
+   */
   canEmit (fileName: string): boolean {
     const file = this.files[fileName]
     return file != null && !!file.text
@@ -23,6 +27,8 @@ export class TsFileMap {
   getSrc (fileName: string): string | undefined {
     let file: TsFile | undefined = this.files[fileName]
 
+    // If it does not processed yet,
+    // register it into map with returning file data
     if (!file) {
       file = this.registerFile(fileName)
     }
@@ -52,12 +58,16 @@ export class TsFileMap {
       return file
     }
 
+    // If it is .vue file, extract script part and check it is ts or not
     const script = vueCompiler.parseComponent(src, { pad: true }).script
     if (script == null || script.lang !== 'ts') {
       return undefined
     }
 
     file.text = script.content
+
+    // To ensure the compiler can process .vue file,
+    // we need to add .ts suffix to file name
     this.files[rawFileName + '.ts'] = file
 
     return file
