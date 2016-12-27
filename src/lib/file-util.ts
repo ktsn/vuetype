@@ -9,13 +9,12 @@ export function readFileSync (filePath: string): string | undefined {
   }
 }
 
+export function readFile (filePath: string): Promise<string> {
+  return exec(fs.readFile, filePath, 'utf8')
+}
+
 export function writeFile (filePath: string, data: string): Promise<never> {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(filePath, data, err => {
-      if (err) return reject(err)
-      resolve()
-    })
-  })
+  return exec(fs.writeFile, filePath, data)
 }
 
 export function globSync (patterns: string | string[]): string[] {
@@ -26,4 +25,13 @@ export function globSync (patterns: string | string[]): string[] {
   return patterns.reduce((acc, pattern) => {
     return acc.concat(glob.sync(pattern))
   }, [] as string[])
+}
+
+function exec (fn: Function, ...args: any[]): Promise<any> {
+  return new Promise((resolve, reject) => {
+    fn.apply(undefined, args.concat((err: any, res: any) => {
+      if (err) reject(err)
+      resolve(res)
+    }))
+  })
 }

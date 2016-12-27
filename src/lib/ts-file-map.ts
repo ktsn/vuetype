@@ -12,7 +12,7 @@ export class TsFileMap {
   private files = {} as ts.Map<TsFile>
 
   get fileNames (): string[] {
-    return Object.keys(this.files)
+    return Object.keys(this.files).filter(file => isSupportedFile(file))
   }
 
   canEmit (fileName: string): boolean {
@@ -58,10 +58,14 @@ export class TsFileMap {
     }
 
     file.text = script.content
-    this.files[rawFileName] = this.files[rawFileName + '.ts'] = file
+    this.files[rawFileName + '.ts'] = file
 
     return file
   }
+}
+
+function isSupportedFile (fileName: string): boolean {
+  return /\.(vue|tsx?|jsx?)$/.test(fileName)
 }
 
 function isVueFile (fileName: string): boolean {

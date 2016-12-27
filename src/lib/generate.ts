@@ -5,13 +5,14 @@ import ts = require('typescript')
 import { LanguageService } from './language-service'
 import { writeFile } from './file-util'
 
-export function generate (filenames: string[]): Promise<never> {
+export function generate (filenames: string[], options: ts.CompilerOptions): Promise<never> {
   const vueFiles = filenames
     .filter(file => /\.vue$/.test(file))
     .map(file => path.resolve(file))
 
   const service = new LanguageService(vueFiles, {
-    declaration: true
+    ...options,
+    noEmitOnError: true
   })
 
   return Promise.all(
