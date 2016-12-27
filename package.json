@@ -45,13 +45,13 @@
     "tslint-config-ktsn": "^2.0.0",
     "typescript": "^2.1.4",
     "vue": "^2.1.7",
-    "vue-class-component": "^4.4.0",
-    "vue-template-compiler": "^2.1.7"
+    "vue-class-component": "^4.4.0"
   },
   "dependencies": {
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "glob": "^7.1.1",
-    "typescript": "^2.1.4"
+    "typescript": "^2.1.4",
+    "vue-template-compiler": "^2.1.7"
   }
 }
