@@ -4,7 +4,7 @@ import assert = require('assert')
 import path = require('path')
 import program = require('commander')
 import { globSync } from '../lib/file-util'
-import { findAndReadConfig, parseCompilerOptions } from '../lib/config'
+import { findAndReadConfig } from '../lib/config'
 import { generate } from '../lib/generate'
 
 // tslint:disable-next-line
@@ -22,11 +22,10 @@ if (program.args.length === 0) {
     return path.join(arg, '**/*.vue')
   })
 
-  const root = detectDeepestRoot(program.args)
-  findAndReadConfig(root).then(json => {
-    const options = json ? parseCompilerOptions(json, root) : {}
-    generate(globSync(patterns), options)
-  })
+  const root = path.resolve(detectDeepestRoot(program.args))
+  const config = findAndReadConfig(root)
+  const options = config ? config.options : {}
+  generate(globSync(patterns), options)
 }
 
 function detectDeepestRoot (pathNames: string[]): string {

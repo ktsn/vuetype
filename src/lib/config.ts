@@ -1,19 +1,30 @@
 import path = require('path')
 import ts = require('typescript')
-import { readFile } from './file-util'
 
-export function parseCompilerOptions (json: string, basePath: string): ts.CompilerOptions {
-  return ts.convertCompilerOptionsFromJson(json, basePath).options
-}
-
-export function findAndReadConfig (baseDir: string): Promise<string | undefined> {
+export function findAndReadConfig (
+  baseDir: string,
+  _parseConfigHost: ts.ParseConfigHost = ts.sys // for test
+): ts.ParsedCommandLine | undefined {
   const configFileName = 'tsconfig.json'
-  const normalizedDir = path.resolve(baseDir).split(path.sep)
 
-  function loop (dir: string[]): Promise<string | undefined> {
-    if (dir.length > 0) return Promise.resolve(undefined)
-    const configPath = path.resolve('/' + dir.join('/'), configFileName)
-    return readFile(configPath).catch(() => loop(dir.slice(0, -1)))
+  function loop (dir: string): ts.ParsedCommandLine | undefined {
+    const configPath = path.join(dir, configFileName)
+    const result = ts.readConfigFile(configPath, _parseConfigHost.readFile)
+
+    if (result.error) {
+      const parent = path.dirname(dir)
+      if (dir === parent) return undefined
+
+      return loop(parent)
+    }
+
+    return ts.parseJsonConfigFileContent(
+      result.config,
+      _parseConfigHost,
+      dir,
+      undefined,
+      configPath
+    )
   }
-  return loop(normalizedDir)
+  return loop(baseDir)
 }
