@@ -17,6 +17,10 @@ export function writeFile (filePath: string, data: string): Promise<never> {
   return exec(fs.writeFile, filePath, data)
 }
 
+export function exists (filePath: string): boolean {
+  return fs.existsSync(filePath)
+}
+
 export function globSync (patterns: string | string[]): string[] {
   if (typeof patterns === 'string') {
     patterns = [patterns]

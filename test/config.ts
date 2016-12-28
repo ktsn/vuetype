@@ -25,6 +25,8 @@ const host: ts.ParseConfigHost = {
   }
 }
 
+const exists = (fileName: string) => fs.existsSync(fileName)
+
 describe('tsconfig detection', () => {
   beforeEach(clear)
 
@@ -36,7 +38,7 @@ describe('tsconfig detection', () => {
     }
     mock('/path/to/tsconfig.json', config)
 
-    const data = findAndReadConfig('/path/to', host)
+    const data = findAndReadConfig('/path/to', host, exists)
     assert.ok(data)
 
     const options = data!.options
@@ -58,7 +60,7 @@ describe('tsconfig detection', () => {
     mock('/path/to/c/tsconfig.json', configC)
     mock('/path/to/b/src/test.ts', {})
 
-    const data = findAndReadConfig('/path/to/b/src', host)
+    const data = findAndReadConfig('/path/to/b/src', host, exists)
     assert.ok(data)
 
     const options = data!.options
