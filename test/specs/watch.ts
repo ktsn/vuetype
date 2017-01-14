@@ -25,25 +25,29 @@ describe('watch', () => {
     watcher.on('add', once(() => {
       test(p('test.vue.d.ts'), 'export declare const test: string;')
       done()
-    }, true))
+    }))
 
-    fs.writeFileSync(p('test.vue'), vue('export const test: string = ""'))
+    fs.writeFile(p('test.vue'), vue('export const test: string = ""'))
   })
 
   it('updates d.ts if .vue file is updated', done => {
+    watcher.on('add', once(() => {
+      test(p('test.vue.d.ts'), 'export declare const test: string;')
+      fs.writeFile(p('test.vue'), vue('export const foo: number = 1'))
+    }))
+
     watcher.on('change', once(() => {
       test(p('test.vue.d.ts'), 'export declare const foo: number;')
       done()
-    }))
+    }, 1))
 
-    fs.writeFileSync(p('test.vue'), vue('export const test: string = ""'))
-    fs.writeFileSync(p('test.vue'), vue('export const foo: number = 1'))
+    fs.writeFile(p('test.vue'), vue('export const test: string = ""'))
   })
 
   it('removes d.ts if corresponding .vue file is removed', done => {
     watcher.on('add', once(() => {
       assert.ok(fs.existsSync(p('test.vue.d.ts')))
-      fs.unlinkSync(p('test.vue'))
+      fs.unlink(p('test.vue'))
     }))
 
     watcher.on('unlink', once(() => {
@@ -51,7 +55,7 @@ describe('watch', () => {
       done()
     }))
 
-    fs.writeFileSync(p('test.vue'), vue('export const test: string = ""'))
+    fs.writeFile(p('test.vue'), vue('export const test: string = ""'))
   })
 
   it('allows re-add .vue file', done => {
@@ -61,19 +65,18 @@ describe('watch', () => {
     watcher.on('add', once(() => {
       test(p('test.vue.d.ts'), 'export declare let b: boolean;')
       done()
-    }, true))
+    }))
 
-    fs.writeFileSync(p('test.vue'), vue('export declare let b: boolean'))
+    fs.writeFile(p('test.vue'), vue('export declare let b: boolean'))
   })
 })
 
-// fs.writeFile emits `add` event with empty file data
-// so we need to skip first add event in testing
-function once (fn: () => void, ignoreFirst: boolean = false): () => void {
+function once (fn: () => void, skip: number = 0): (p: string) => void {
   let done = false
-  return () => {
-    if (ignoreFirst) {
-      ignoreFirst = false
+  return path => {
+    if (!/\.vue.d.ts$/.test(path)) return
+    if (skip > 0) {
+      skip -= 1
       return
     }
     if (done) return
