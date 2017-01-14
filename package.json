@@ -34,23 +34,23 @@
   },
   "devDependencies": {
     "@types/chokidar": "^1.4.31",
-    "@types/colors": "^0.6.33",
+    "@types/colors": "^1.1.1",
     "@types/commander": "^2.3.31",
     "@types/glob": "^5.0.30",
     "@types/memory-fs": "^0.3.0",
-    "@types/mocha": "^2.2.32",
-    "@types/node": "^6.0.53",
-    "@types/power-assert": "0.0.28",
+    "@types/mocha": "^2.2.37",
+    "@types/node": "^7.0.0",
+    "@types/power-assert": "1.4.29",
     "@types/rimraf": "0.0.28",
     "espower-typescript": "^7.0.0",
     "memory-fs": "^0.4.1",
     "mocha": "^3.2.0",
-    "power-assert": "^1.4.1",
+    "power-assert": "^1.4.2",
     "rimraf": "^2.5.4",
-    "tslint": "^4.0.0",
-    "tslint-config-ktsn": "^2.0.0",
-    "typescript": "^2.1.4",
-    "vue": "^2.1.7",
+    "tslint": "^4.3.1",
+    "tslint-config-ktsn": "^2.0.1",
+    "typescript": "^2.1.5",
+    "vue": "^2.1.8",
     "vue-class-component": "^4.4.0"
   },
   "dependencies": {
@@ -58,7 +58,7 @@
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "glob": "^7.1.1",
-    "typescript": "^2.1.4",
-    "vue-template-compiler": "^2.1.7"
+    "typescript": "^2.1.5",
+    "vue-template-compiler": "^2.1.8"
   }
 }
