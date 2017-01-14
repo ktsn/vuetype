@@ -53,11 +53,29 @@ describe('watch', () => {
 
     fs.writeFileSync(p('test.vue'), vue('export const test: string = ""'))
   })
+
+  it('allows re-add .vue file', done => {
+    fs.writeFileSync(p('test.vue'), vue('export declare let a: string'))
+    fs.unlinkSync(p('test.vue'))
+
+    watcher.on('add', once(() => {
+      test(p('test.vue.d.ts'), 'export declare let b: boolean;')
+      done()
+    }, true))
+
+    fs.writeFileSync(p('test.vue'), vue('export declare let b: boolean'))
+  })
 })
 
-function once (fn: () => void): () => void {
+// fs.writeFile emits `add` event with empty file data
+// so we need to skip first add event in testing
+function once (fn: () => void, ignoreFirst: boolean = false): () => void {
   let done = false
   return () => {
+    if (ignoreFirst) {
+      ignoreFirst = false
+      return
+    }
     if (done) return
     fn()
     done = true

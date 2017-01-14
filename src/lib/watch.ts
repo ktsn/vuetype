@@ -17,7 +17,7 @@ export function watch (
 
   watcher
     .on('add', onlyVue(file => {
-      service.registerFile(file)
+      service.updateFile(file)
       saveDts(file, service)
     }))
     .on('change', onlyVue(file => {
