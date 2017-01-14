@@ -36,4 +36,3 @@ export function generate (filenames: string[], options: ts.CompilerOptions): Pro
     })
   )
 }
-
