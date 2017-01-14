@@ -18,9 +18,7 @@ export function generate (filenames: string[], options: ts.CompilerOptions): Pro
 
   return Promise.all(
     vueFiles.map(file => {
-      // .ts suffix is needed since the compiler skips compile
-      // if the file name seems to be not supported types
-      const dts = service.getDts(file + '.ts')
+      const dts = service.getDts(file)
       const dtsPath = file + '.d.ts'
 
       if (dts.errors.length > 0) {
