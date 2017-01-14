@@ -19,6 +19,14 @@ export class LanguageService {
     this.tsService = ts.createLanguageService(serviceHost, ts.createDocumentRegistry())
   }
 
+  updateFile (fileName: string): void {
+    this.files.updateFile(fileName)
+  }
+
+  registerFile (fileName: string): void {
+    this.files.registerFile(fileName)
+  }
+
   getDts (fileName: string): Result<string> {
     fileName = normalize(fileName)
 

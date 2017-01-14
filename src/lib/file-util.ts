@@ -19,6 +19,10 @@ export function writeFile (filePath: string, data: string): Promise<never> {
   return exec(fs.writeFile, filePath, data)
 }
 
+export function unlink (filePath: string): Promise<never> {
+  return exec(fs.unlink, filePath)
+}
+
 export function exists (filePath: string): boolean {
   return fs.existsSync(filePath)
 }

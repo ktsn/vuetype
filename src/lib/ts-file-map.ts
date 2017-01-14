@@ -1,3 +1,4 @@
+import assert = require('assert')
 import ts = require('typescript')
 import vueCompiler = require('vue-template-compiler')
 import { readFileSync } from './file-util'
@@ -40,6 +41,18 @@ export class TsFileMap {
     return this.files[fileName] && this.files[fileName].version.toString()
   }
 
+  updateFile (fileName: string): void {
+    const file = this.files[fileName]
+    assert(file)
+
+    let src = readFileSync(file.rawFileName)
+    if (src && isVueFile) {
+      src = extractCode(src)
+    }
+    file.version += 1
+    file.text = src
+  }
+
   registerFile (fileName: string): TsFile | undefined {
     const rawFileName = getRawFileName(fileName)
     const src = readFileSync(rawFileName)
@@ -58,24 +71,30 @@ export class TsFileMap {
       return file
     }
 
-    // If it is .vue file, extract script part and check it is ts or not
-    const script = vueCompiler.parseComponent(src, { pad: true }).script
-    if (script == null || script.lang !== 'ts') {
-      return undefined
-    }
-
-    file.text = script.content
+    file.text = extractCode(src)
 
     // To ensure the compiler can process .vue file,
     // we need to add .ts suffix to file name
-    this.files[rawFileName + '.ts'] = file
+    this.files[rawFileName] = this.files[rawFileName + '.ts'] = file
 
     return file
   }
 }
 
+/**
+ * Extract TS code from single file component
+ * If there are no TS code, return undefined
+ */
+function extractCode (src: string): string | undefined {
+  const script = vueCompiler.parseComponent(src, { pad: true }).script
+  if (script == null || script.lang !== 'ts') {
+    return undefined
+  }
+  return script.content
+}
+
 function isSupportedFile (fileName: string): boolean {
-  return /\.(vue|tsx?|jsx?)$/.test(fileName)
+  return /\.(tsx?|jsx?)$/.test(fileName)
 }
 
 function isVueFile (fileName: string): boolean {
