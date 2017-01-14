@@ -24,7 +24,7 @@
     "vuetype": "dist/bin/vuetype.js"
   },
   "scripts": {
-    "prepublish": "npm run test && npm run clean && npm run build",
+    "prepublish": "npm run lint && npm run test && npm run clean && npm run build",
     "clean": "rm -rf lib",
     "dev": "tsc -p src -w",
     "build": "tsc -p src",
