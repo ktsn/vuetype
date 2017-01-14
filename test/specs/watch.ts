@@ -12,7 +12,7 @@ describe('watch', () => {
 
   beforeEach(done => {
     fs.mkdir(p('./'), () => {
-      watcher = watch([p('./')]).on('ready', done)
+      watcher = watch([p('./')], {}, true).on('ready', done)
     })
   })
 
@@ -39,7 +39,7 @@ describe('watch', () => {
     watcher.on('change', once(() => {
       test(p('test.vue.d.ts'), 'export declare const foo: number;')
       done()
-    }, 1))
+    }))
 
     fs.writeFile(p('test.vue'), vue('export const test: string = ""'))
   })
@@ -71,14 +71,10 @@ describe('watch', () => {
   })
 })
 
-function once (fn: () => void, skip: number = 0): (p: string) => void {
+function once (fn: () => void): (p: string) => void {
   let done = false
   return path => {
     if (!/\.vue.d.ts$/.test(path)) return
-    if (skip > 0) {
-      skip -= 1
-      return
-    }
     if (done) return
     fn()
     done = true
