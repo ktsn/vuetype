@@ -48,6 +48,10 @@ export class TsFileMap {
     this.registerFile(file)
   }
 
+  /**
+   * Load a TS file that specifed by the argument
+   * If .vue file is specified, it extract and retain TS code part only.
+   */
   private loadFile (fileName: string): TsFile {
     const rawFileName = getRawFileName(fileName)
     const file = this.getFile(fileName) || {
@@ -69,6 +73,14 @@ export class TsFileMap {
     return file
   }
 
+  /**
+   * Just returns a file object
+   *
+   * Returns undefined
+   *   - Not loaded yet
+   * Return TsFile but file.text is undefined
+   *   - Loaded but not found or unsupported
+   */
   private getFile (fileName: string): TsFile | undefined {
     return this.files[fileName]
   }
