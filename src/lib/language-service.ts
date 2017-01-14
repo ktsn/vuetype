@@ -12,7 +12,7 @@ export class LanguageService {
 
   constructor (rootFileNames: string[], private options: ts.CompilerOptions) {
     rootFileNames.forEach(file => {
-      this.files.registerFile(file)
+      this.files.updateFile(file)
     })
 
     const serviceHost = this.makeServiceHost(options)
@@ -21,10 +21,6 @@ export class LanguageService {
 
   updateFile (fileName: string): void {
     this.files.updateFile(fileName)
-  }
-
-  registerFile (fileName: string): void {
-    this.files.registerFile(fileName)
   }
 
   getDts (fileName: string): Result<string> {
