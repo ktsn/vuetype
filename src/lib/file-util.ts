@@ -1,3 +1,5 @@
+import assert = require('assert')
+import path = require('path')
 import fs = require('fs')
 import glob = require('glob')
 
@@ -30,6 +32,22 @@ export function globSync (patterns: string | string[]): string[] {
     return acc.concat(glob.sync(pattern))
   }, [] as string[])
 }
+
+export function deepestSharedRoot (pathNames: string[]): string {
+  assert(pathNames.length >= 1)
+
+  let root: string[] = pathNames[0].split(path.sep)
+  pathNames.slice(1).forEach(pathName => {
+    const dirs = pathName.split(path.sep)
+    dirs.forEach((dir, i) => {
+      if (root[i] !== dir) {
+        root = root.slice(0, i)
+      }
+    })
+  })
+  return root.join(path.sep)
+}
+
 
 function exec (fn: Function, ...args: any[]): Promise<any> {
   return new Promise((resolve, reject) => {
