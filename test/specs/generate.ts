@@ -2,9 +2,9 @@ import path = require('path')
 import fs = require('fs')
 import assert = require('power-assert')
 import ts = require('typescript')
-import { generate } from '../src/lib/generate'
+import { generate } from '../../src/lib/generate'
 
-const resolve = (_path: string) => path.resolve(__dirname, _path)
+const resolve = (_path: string) => path.resolve(__dirname, '../', _path)
 
 const compilerOptions: ts.CompilerOptions = {
   experimentalDecorators: true

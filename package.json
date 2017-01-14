@@ -28,8 +28,8 @@
     "clean": "rm -rf lib",
     "dev": "tsc -p src -w",
     "build": "tsc -p src",
-    "lint": "tslint \"src/**/*.ts\" && tslint \"test/**/*.ts\"",
-    "test": "rm -rf test/fixtures/*.d.ts && mocha --compilers ts:espower-typescript/guess test/*.ts"
+    "lint": "tslint \"src/**/*.ts\" && tslint \"test/specs/**/*.ts\"",
+    "test": "rm -rf test/fixtures/*.d.ts && mocha --compilers ts:espower-typescript/guess test/specs/**/*.ts"
   },
   "devDependencies": {
     "@types/colors": "^0.6.33",
