@@ -1,5 +1,8 @@
 # vuetype
 
+[![npm version](https://badge.fury.io/js/vuetype.svg)](https://badge.fury.io/js/vuetype)
+[![Build Status](https://travis-ci.org/ktsn/vuetype.svg?branch=master)](https://travis-ci.org/ktsn/vuetype)
+
 Generate TypeScript declaration files for .vue files
 
 ## Installation

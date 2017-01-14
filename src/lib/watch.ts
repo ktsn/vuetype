@@ -6,9 +6,12 @@ import { logEmitted, logRemoved, logError } from './logger'
 
 export function watch (
   dirs: string[],
-  compilerOptions: ts.CompilerOptions = {}
+  compilerOptions: ts.CompilerOptions = {},
+  usePolling: boolean = false
 ): chokidar.FSWatcher {
-  const watcher = chokidar.watch(dirs)
+  const watcher = chokidar.watch(dirs, {
+    usePolling
+  })
 
   const service = new LanguageService([], {
     ...compilerOptions,
