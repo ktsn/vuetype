@@ -3,7 +3,7 @@ import path = require('path')
 import glob = require('glob')
 import MemoryFs = require('memory-fs')
 import ts = require('typescript')
-import { findAndReadConfig } from '../src/lib/config'
+import { findAndReadConfig } from '../../src/lib/config'
 
 const fs = new MemoryFs()
 const ScriptTarget = ts.ScriptTarget

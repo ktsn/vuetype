@@ -12,14 +12,20 @@ export class LanguageService {
 
   constructor (rootFileNames: string[], private options: ts.CompilerOptions) {
     rootFileNames.forEach(file => {
-      this.files.registerFile(file)
+      this.files.updateFile(file)
     })
 
     const serviceHost = this.makeServiceHost(options)
     this.tsService = ts.createLanguageService(serviceHost, ts.createDocumentRegistry())
   }
 
+  updateFile (fileName: string): void {
+    this.files.updateFile(fileName)
+  }
+
   getDts (fileName: string): Result<string> {
+    fileName = normalize(fileName)
+
     // Unsupported files or not found
     if (!this.files.canEmit(fileName)) {
       return {
@@ -75,4 +81,13 @@ export class LanguageService {
       return message
     })
   }
+}
+
+// .ts suffix is needed since the compiler skips compile
+// if the file name seems to be not supported types
+function normalize (fileName: string): string {
+  if (/\.vue$/.test(fileName)) {
+    return fileName + '.ts'
+  }
+  return fileName
 }

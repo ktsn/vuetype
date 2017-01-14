@@ -28,10 +28,12 @@
     "clean": "rm -rf lib",
     "dev": "tsc -p src -w",
     "build": "tsc -p src",
-    "lint": "tslint \"src/**/*.ts\" && tslint \"test/**/*.ts\"",
-    "test": "rm -rf test/fixtures/*.d.ts && mocha --compilers ts:espower-typescript/guess test/*.ts"
+    "lint": "tslint \"src/**/*.ts\" && tslint \"test/specs/**/*.ts\"",
+    "test": "rm -rf test/fixtures/*.d.ts && mocha --compilers ts:espower-typescript/guess test/specs/**/*.ts",
+    "test:debug": "npm t -- --inspect --debug-brk --recursive"
   },
   "devDependencies": {
+    "@types/chokidar": "^1.4.31",
     "@types/colors": "^0.6.33",
     "@types/commander": "^2.3.31",
     "@types/glob": "^5.0.30",
@@ -39,10 +41,12 @@
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.53",
     "@types/power-assert": "0.0.28",
+    "@types/rimraf": "0.0.28",
     "espower-typescript": "^7.0.0",
     "memory-fs": "^0.4.1",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.1",
+    "rimraf": "^2.5.4",
     "tslint": "^4.0.0",
     "tslint-config-ktsn": "^2.0.0",
     "typescript": "^2.1.4",
@@ -50,6 +54,7 @@
     "vue-class-component": "^4.4.0"
   },
   "dependencies": {
+    "chokidar": "^1.6.1",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "glob": "^7.1.1",

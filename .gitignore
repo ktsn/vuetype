@@ -1,5 +1,8 @@
 node_modules/
 
 /dist/
+
+# Testing
 /test/fixtures/**/*.d.ts
+/test/.tmp/
 
