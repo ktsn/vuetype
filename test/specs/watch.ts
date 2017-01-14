@@ -23,9 +23,9 @@ describe('watch', () => {
 
   it('generates d.ts if .vue file is added', done => {
     watcher.on('add', once(() => {
-      assert.ok(fs.existsSync(p('test.vue.d.ts')))
+      test(p('test.vue.d.ts'), 'export declare const test: string;')
       done()
-    }))
+    }, true))
 
     fs.writeFileSync(p('test.vue'), vue('export const test: string = ""'))
   })
