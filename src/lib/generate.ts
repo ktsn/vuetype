@@ -4,6 +4,7 @@ import path = require('path')
 import ts = require('typescript')
 import { LanguageService } from './language-service'
 import { writeFile } from './file-util'
+import { logEmitted, logError } from './logger'
 
 export function generate (filenames: string[], options: ts.CompilerOptions): Promise<never> {
   const vueFiles = filenames
@@ -36,14 +37,3 @@ export function generate (filenames: string[], options: ts.CompilerOptions): Pro
   )
 }
 
-function logEmitted (filePath: string): void {
-  console.log('Emitted: '.green + filePath)
-}
-
-function logError (filePath: string, messages: string[]): void {
-  const errors = [
-    'Emit Failed: '.red + filePath,
-    ...messages.map(m => '  ' + 'Error: '.red + m)
-  ]
-  console.error(errors.join('\n'))
-}
