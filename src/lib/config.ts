@@ -10,9 +10,15 @@ export function findAndReadConfig (
   const configFileName = 'tsconfig.json'
 
   function loop (dir: string): ts.ParsedCommandLine | undefined {
+    const parentPath = path.dirname(dir)
+    // It is root directory if parent and current dirname are the same
+    if (dir === parentPath) {
+      return undefined
+    }
+
     const configPath = path.join(dir, configFileName)
     if (!_exists(configPath)) {
-      return loop(dir.slice(0, -1))
+      return loop(parentPath)
     }
 
     const result = ts.readConfigFile(configPath, _parseConfigHost.readFile)

@@ -66,6 +66,11 @@ describe('tsconfig detection', () => {
     const options = data!.options
     assert(options.target === ScriptTarget.ES2015)
   })
+
+  it('returns undefined if config is not found', () => {
+    const data = findAndReadConfig('/path/to/src', host, exists)
+    assert(data === undefined)
+  })
 })
 
 function readFile (fileName: string): string {
