@@ -14,6 +14,7 @@
   "files": [
     "dist"
   ],
+  "main": "dist/lib/api.js",
   "homepage": "https://github.com/ktsn/vuetype",
   "bugs": "https://github.com/ktsn/vuetype/issues",
   "repository": {
