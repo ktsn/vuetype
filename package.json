@@ -15,6 +15,7 @@
     "dist"
   ],
   "main": "dist/lib/api.js",
+  "typings": "dist/lib/api.d.ts",
   "homepage": "https://github.com/ktsn/vuetype",
   "bugs": "https://github.com/ktsn/vuetype/issues",
   "repository": {
@@ -26,7 +27,7 @@
   },
   "scripts": {
     "prepublish": "npm run lint && npm run test && npm run clean && npm run build",
-    "clean": "rm -rf lib",
+    "clean": "rm -rf dist",
     "dev": "tsc -p src -w",
     "build": "tsc -p src",
     "lint": "tslint \"src/**/*.ts\" && tslint \"test/specs/**/*.ts\"",
