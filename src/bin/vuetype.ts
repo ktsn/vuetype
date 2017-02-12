@@ -4,7 +4,7 @@ import assert = require('assert')
 import path = require('path')
 import program = require('commander')
 import { globSync, deepestSharedRoot } from '../lib/file-util'
-import { findAndReadConfig } from '../lib/config'
+import { findConfig, readConfig } from '../lib/config'
 import { generate } from '../lib/generate'
 import { watch } from '../lib/watch'
 
@@ -21,7 +21,8 @@ if (program.args.length === 0) {
   program.help()
 } else {
   const root = path.resolve(deepestSharedRoot(program.args))
-  const config = findAndReadConfig(root)
+  const configPath = findConfig(root)
+  const config = configPath && readConfig(configPath)
   const options = config ? config.options : {}
 
   if (program['watch']) {
