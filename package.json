@@ -1,6 +1,6 @@
 {
   "name": "vuetype",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "katashin",
   "description": "Generate TypeScript declaration files for .vue files",
   "keywords": [
