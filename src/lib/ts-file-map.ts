@@ -10,10 +10,10 @@ export interface TsFile {
 }
 
 export class TsFileMap {
-  private files = {} as ts.Map<TsFile>
+  private files = new Map<string, TsFile>()
 
   get fileNames (): string[] {
-    return Object.keys(this.files).filter(file => isSupportedFile(file))
+    return Array.from(this.files.keys()).filter(file => isSupportedFile(file))
   }
 
   /**
@@ -82,7 +82,7 @@ export class TsFileMap {
    *   - Loaded but not found or unsupported
    */
   private getFile (fileName: string): TsFile | undefined {
-    return this.files[fileName]
+    return this.files.get(fileName)
   }
 
   private registerFile (file: TsFile): void {
@@ -91,10 +91,10 @@ export class TsFileMap {
     if (isVueFile(rawFileName)) {
       // To ensure the compiler can process .vue file,
       // we need to add .ts suffix to file name
-      this.files[rawFileName + '.ts'] = file
+      this.files.set(rawFileName + '.ts', file)
     }
 
-    this.files[rawFileName] = file
+    this.files.set(rawFileName, file)
   }
 }
 

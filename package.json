@@ -60,7 +60,7 @@
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "glob": "^7.1.1",
-    "typescript": "^2.1.5",
+    "typescript": "~2.3.2",
     "vue-template-compiler": "^2.1.8"
   }
 }
