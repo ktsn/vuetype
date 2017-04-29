@@ -51,6 +51,14 @@ export default class MyComp extends Vue {
 }
 ```
 
+### Watch mode
+
+You can enable watch mode by adding `--watch` (shorthand `-w`) flag. In the watch mode, vuetype watches update of `.vue` files and generates declaration files when the `.vue` files are updated.
+
+```bash
+vuetype --watch src/components
+```
+
 ## License
 
 MIT
