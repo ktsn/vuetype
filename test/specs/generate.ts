@@ -33,6 +33,12 @@ describe('generate', () => {
     })
   })
 
+  it('should emit d.ts for class component with additional type in sfc', () => {
+    return gen(fixtures('ts-class.vue'), compilerOptions).then(() => {
+      test(fixtures('ts-class-with-additional-type.vue.d.ts'), expects('ts-class.vue.d.ts'))
+    })
+  })
+
   it('should emit d.ts for component options in sfc', () => {
     return gen(fixtures('ts-object.vue'), {}).then(() => {
       test(fixtures('ts-object.vue.d.ts'), expects('ts-object.vue.d.ts'))
