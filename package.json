@@ -27,11 +27,11 @@
   },
   "scripts": {
     "prepublish": "npm run lint && npm run test && npm run clean && npm run build",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "dev": "tsc -p src -w",
     "build": "tsc -p src",
     "lint": "tslint \"src/**/*.ts\" && tslint \"test/specs/**/*.ts\"",
-    "test": "rm -rf test/fixtures/*.d.ts && mocha --compilers ts:espower-typescript/guess test/specs/**/*.ts",
+    "test": "rimraf test/fixtures/*.d.ts && mocha --compilers ts:espower-typescript/guess test/specs/**/*.ts",
     "test:debug": "npm t -- --inspect --debug-brk --recursive"
   },
   "devDependencies": {

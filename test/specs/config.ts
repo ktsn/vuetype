@@ -27,33 +27,37 @@ const host: ts.ParseConfigHost = {
 
 const exists = (fileName: string) => fs.existsSync(fileName)
 
+const root = path.resolve('/')
+const pathTo = (...parts: string[]) => path.join(root, 'path', 'to', ...parts)
+
 describe('tsconfig detection', () => {
   beforeEach(clear)
 
   it('should find tsconfig.json on a directory', () => {
-    mock('/path/to/tsconfig.json', {})
+    const tsconfig = pathTo('tsconfig.json')
+    mock(tsconfig, {})
 
-    const pathname = findConfig('/path/to', exists)
-    assert(pathname === '/path/to/tsconfig.json')
+    const pathname = findConfig(pathTo(), exists)
+    assert(pathname === tsconfig)
   })
 
   it('should find tsconfig.json on the closest ancestor', () => {
-    mock('/path/to/tsconfig.json', {})
-    mock('/path/to/b/tsconfig.json', {})
-    mock('/path/to/c/tsconfig.json', {})
-    mock('/path/to/b/src/test.ts', {})
+    mock(pathTo('tsconfig.json'), {})
+    mock(pathTo('b', 'tsconfig.json'), {})
+    mock(pathTo('c', 'tsconfig.json'), {})
+    mock(pathTo('b', 'src', 'test.ts'), {})
 
-    const pathname = findConfig('/path/to/b/src', exists)
-    assert(pathname === '/path/to/b/tsconfig.json')
+    const pathname = findConfig(pathTo('b', 'src'), exists)
+    assert(pathname === pathTo('b', 'tsconfig.json'))
   })
 
   it('returns undefined if config is not found', () => {
-    const pathname = findConfig('/path/to/src', exists)
+    const pathname = findConfig(pathTo('src'), exists)
     assert(pathname === undefined)
   })
 
   it('read tsconfig.json', () => {
-    mock('/path/to/tsconfig.json', {
+    mock(pathTo('tsconfig.json'), {
       compilerOptions: {
         target: 'es5',
         module: 'es2015',
@@ -61,7 +65,7 @@ describe('tsconfig detection', () => {
         experimentalDecorators: true
       }
     })
-    const data = readConfig('/path/to/tsconfig.json', host)
+    const data = readConfig(pathTo('tsconfig.json'), host)
     assert.ok(data)
 
     const options = data!.options
@@ -72,18 +76,20 @@ describe('tsconfig detection', () => {
   })
 
   it('returns undefined if the config file is not found', () => {
-    const data = readConfig('/path/to/tsconfig.json', host)
+    const data = readConfig(pathTo('tsconfig.json'), host)
     assert.ifError(data)
   })
 })
 
 function mock (fileName: string, data: any): void {
-  fs.mkdirpSync(fileName.split('/').slice(0, -1).join('/'))
+  fs.mkdirpSync(path.resolve(fileName, '..'))
   fs.writeFileSync(fileName, JSON.stringify(data))
 }
 
 function clear (): void {
-  fs.readdirSync('/').forEach(dir => {
-    fs.rmdirSync('/' + dir)
-  })
+  if (fs.existsSync(root)) {
+    fs.readdirSync(root).forEach(dir => {
+      fs.rmdirSync(path.join(root, dir))
+    })
+  }
 }
