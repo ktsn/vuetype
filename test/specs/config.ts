@@ -87,7 +87,7 @@ function mock (fileName: string, data: any): void {
 }
 
 function clear (): void {
-  if (fs.existsSync(root)) {
+  if (root === '/' || fs.existsSync(root)) {
     fs.readdirSync(root).forEach(dir => {
       fs.rmdirSync(path.join(root, dir))
     })
