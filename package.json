@@ -51,7 +51,7 @@
     "rimraf": "^2.5.4",
     "tslint": "^4.3.1",
     "tslint-config-ktsn": "^2.0.1",
-    "typescript": "^2.1.5",
+    "typescript": "^2.3.3",
     "vue": "^2.1.8",
     "vue-class-component": "^4.4.0"
   },
@@ -60,7 +60,7 @@
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "glob": "^7.1.1",
-    "typescript": "~2.3.2",
+    "typescript": "2.3.3",
     "vue-template-compiler": "^2.1.8"
   }
 }
