@@ -6,7 +6,7 @@
 import Vue = require('vue')
 import Component from 'vue-class-component'
 
-type Foo = string;
+export type Foo = string;
 
 @Component
 export default class TsClass extends Vue {
