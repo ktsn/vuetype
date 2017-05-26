@@ -14,6 +14,7 @@ export function generate (filenames: string[], options: ts.CompilerOptions): Pro
   // Should not emit if some errors are occurred
   const service = new LanguageService(vueFiles, {
     ...options,
+    declaration: true,
     noEmitOnError: true
   })
 
