@@ -62,7 +62,7 @@ export class TsFileMap {
 
     let src = readFileSync(rawFileName)
     if (src && isVueFile(rawFileName)) {
-      src = extractCode(src)
+      src = extractCode(src, rawFileName)
     }
 
     if (src !== file.text) {
@@ -102,10 +102,13 @@ export class TsFileMap {
  * Extract TS code from single file component
  * If there are no TS code, return undefined
  */
-function extractCode (src: string): string | undefined {
+function extractCode (src: string, rawFileName: string): string | undefined {
   const script = vueCompiler.parseComponent(src, { pad: true }).script
   if (script == null || script.lang !== 'ts') {
     return undefined
+  }
+  if (script.src) {
+    return readFileSync(require("path").join(rawFileName,'..',script.src));
   }
   return script.content
 }
