@@ -4,13 +4,15 @@ import vueCompiler = require('vue-template-compiler')
 import { readFileSync, exists } from './file-util'
 
 export interface TsFile {
-  rawFileName: string
+  rawFileName: string,
+  srcFileName?: string,
   version: number
   text: string | undefined
 }
 
 export class TsFileMap {
   private files = new Map<string, TsFile>()
+  private srcFiles = new Map<string, TsFile>()
 
   get fileNames (): string[] {
     return Array.from(this.files.keys()).filter(file => isSupportedFile(file))
@@ -48,6 +50,11 @@ export class TsFileMap {
     this.registerFile(file)
   }
 
+  getVueFile(fileName: string) {
+    let file = this.srcFiles.get(fileName);
+    return file && file.rawFileName;
+  }
+
   /**
    * Load a TS file that specifed by the argument
    * If .vue file is specified, it extract and retain TS code part only.
@@ -62,7 +69,9 @@ export class TsFileMap {
 
     let src = readFileSync(rawFileName)
     if (src && isVueFile(rawFileName)) {
-      src = extractCode(src, rawFileName)
+      let code = extractCode(src, rawFileName);
+      src = code.content;
+      file.srcFileName = code.srcFileName;
     }
 
     if (src !== file.text) {
@@ -88,10 +97,20 @@ export class TsFileMap {
   private registerFile (file: TsFile): void {
     const { rawFileName } = file
 
+    let oldFile = this.files.get(rawFileName);
+    if (oldFile && oldFile.srcFileName && this.srcFiles.has(oldFile.srcFileName))
+    {
+      this.srcFiles.delete(oldFile.srcFileName)
+    }
+
     if (isVueFile(rawFileName)) {
       // To ensure the compiler can process .vue file,
       // we need to add .ts suffix to file name
       this.files.set(rawFileName + '.ts', file)
+    }
+
+    if (file.srcFileName) {
+      this.srcFiles.set(file.srcFileName, file);
     }
 
     this.files.set(rawFileName, file)
@@ -102,15 +121,21 @@ export class TsFileMap {
  * Extract TS code from single file component
  * If there are no TS code, return undefined
  */
-function extractCode (src: string, rawFileName: string): string | undefined {
+function extractCode (src: string, rawFileName: string): { content?: string, srcFileName?: string }  {
   const script = vueCompiler.parseComponent(src, { pad: true }).script
   if (script == null || script.lang !== 'ts') {
-    return undefined
+    return {}
   }
+  let content: string;
+  let srcFileName: string;
   if (script.src) {
-    return readFileSync(require("path").join(rawFileName,'..',script.src));
+    srcFileName = require("path").join(rawFileName,'..',script.src)
+    content = readFileSync(srcFileName) as string;
+  }else{
+    content = script.content;
+    srcFileName = "";
   }
-  return script.content
+  return { content: content, srcFileName: srcFileName };
 }
 
 function isSupportedFile (fileName: string): boolean {
