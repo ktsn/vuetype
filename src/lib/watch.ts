@@ -30,7 +30,7 @@ export function watch (
     .on('unlink', onlyVue(file => {
       service.updateFile(file)
       removeDts(file)
-    }, service))
+    }, null))
 
   return watcher
 }
@@ -62,9 +62,9 @@ function removeDts (fileName: string): void {
     )
 }
 
-function onlyVue (fn: (fileName: string) => void, service: LanguageService): (fileName: string) => void {
+function onlyVue (fn: (fileName: string) => void, service: LanguageService | null): (fileName: string) => void {
   return fileName => {
-    fileName = service.getVueFile(fileName) || fileName
+    fileName = service && service.getVueFile(fileName) || fileName
     if (!/\.vue$/.test(fileName)) return
     fn(fileName)
   }

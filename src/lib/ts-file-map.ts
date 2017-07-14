@@ -68,13 +68,14 @@ export class TsFileMap {
     }
 
     let src = readFileSync(rawFileName)
+    let srcFileName: string | undefined
     if (src && isVueFile(rawFileName)) {
       let code = extractCode(src, rawFileName)
       src = code.content
-      file.srcFileName = code.srcFileName
+      srcFileName = code.srcFileName
     }
 
-    if (src !== file.text) {
+    if (src !== file.text || file.srcFileName !== srcFileName) {
       file.version += 1
       file.text = src
     }
