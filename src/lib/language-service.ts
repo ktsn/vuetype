@@ -24,7 +24,7 @@ export class LanguageService {
   }
 
   getVueFile(fileName: string): string | undefined {
-    return this.files.getVueFile(fileName);
+    return this.files.getVueFile(fileName)
   }
 
   getDts (fileName: string): Result<string> {

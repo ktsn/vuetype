@@ -51,8 +51,8 @@ export class TsFileMap {
   }
 
   getVueFile(fileName: string) {
-    let file = this.srcFiles.get(fileName);
-    return file && file.rawFileName;
+    let file = this.srcFiles.get(fileName)
+    return file && file.rawFileName
   }
 
   /**
@@ -69,9 +69,9 @@ export class TsFileMap {
 
     let src = readFileSync(rawFileName)
     if (src && isVueFile(rawFileName)) {
-      let code = extractCode(src, rawFileName);
-      src = code.content;
-      file.srcFileName = code.srcFileName;
+      let code = extractCode(src, rawFileName)
+      src = code.content
+      file.srcFileName = code.srcFileName
     }
 
     if (src !== file.text) {
@@ -97,7 +97,7 @@ export class TsFileMap {
   private registerFile (file: TsFile): void {
     const { rawFileName } = file
 
-    let oldFile = this.files.get(rawFileName);
+    let oldFile = this.files.get(rawFileName)
     if (oldFile && oldFile.srcFileName && this.srcFiles.has(oldFile.srcFileName))
     {
       this.srcFiles.delete(oldFile.srcFileName)
@@ -110,7 +110,7 @@ export class TsFileMap {
     }
 
     if (file.srcFileName) {
-      this.srcFiles.set(file.srcFileName, file);
+      this.srcFiles.set(file.srcFileName, file)
     }
 
     this.files.set(rawFileName, file)
@@ -121,21 +121,21 @@ export class TsFileMap {
  * Extract TS code from single file component
  * If there are no TS code, return undefined
  */
-function extractCode (src: string, rawFileName: string): { content?: string, srcFileName?: string }  {
+function extractCode (src: string, rawFileName: string): { content?: string, srcFileName?: string } {
   const script = vueCompiler.parseComponent(src, { pad: true }).script
   if (script == null || script.lang !== 'ts') {
     return {}
   }
-  let content: string;
-  let srcFileName: string;
+  let content: string
+  let srcFileName: string | undefined
   if (script.src) {
-    srcFileName = require("path").join(rawFileName,'..',script.src)
-    content = readFileSync(srcFileName) as string;
+    srcFileName = require('path').join(rawFileName,'..',script.src)
+    content = readFileSync(srcFileName as string) as string
   }else{
-    content = script.content;
-    srcFileName = "";
+    content = script.content
+    srcFileName = ''
   }
-  return { content: content, srcFileName: srcFileName };
+  return { content, srcFileName }
 }
 
 function isSupportedFile (fileName: string): boolean {

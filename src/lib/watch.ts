@@ -64,7 +64,7 @@ function removeDts (fileName: string): void {
 
 function onlyVue (fn: (fileName: string) => void, service: LanguageService): (fileName: string) => void {
   return fileName => {
-    fileName = service.getVueFile(fileName) || fileName;
+    fileName = service.getVueFile(fileName) || fileName
     if (!/\.vue$/.test(fileName)) return
     fn(fileName)
   }
