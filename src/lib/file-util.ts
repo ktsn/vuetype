@@ -11,6 +11,10 @@ export function readFileSync (filePath: string): string | undefined {
   }
 }
 
+export function resolve(...paths: string[]): string {
+  return path.relative(process.cwd(), path.resolve(...paths))
+}
+
 export function readFile (filePath: string): Promise<string> {
   return exec(fs.readFile, filePath, 'utf8')
 }

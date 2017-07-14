@@ -1,11 +1,11 @@
 import assert = require('assert')
 import ts = require('typescript')
 import vueCompiler = require('vue-template-compiler')
-import { readFileSync, exists } from './file-util'
+import { readFileSync, exists, resolve } from './file-util'
 
 export interface TsFile {
-  rawFileName: string,
-  srcFileName?: string,
+  rawFileName: string
+  srcFileName?: string
   version: number
   text: string | undefined
 }
@@ -51,7 +51,7 @@ export class TsFileMap {
   }
 
   getVueFile(fileName: string) {
-    let file = this.srcFiles.get(fileName)
+    let file = this.srcFiles.get(resolve(fileName))
     return file && file.rawFileName
   }
 
@@ -126,11 +126,12 @@ function extractCode (src: string, rawFileName: string): { content?: string, src
   if (script == null || script.lang !== 'ts') {
     return {}
   }
-  let content: string
+  let content: string | undefined
   let srcFileName: string | undefined
   if (script.src) {
-    srcFileName = require('path').join(rawFileName,'..',script.src)
-    content = readFileSync(srcFileName as string) as string
+    let srcFile = resolve(rawFileName, '..', script.src)
+    content = readFileSync(srcFile)
+    srcFileName = srcFile
   }else{
     content = script.content
     srcFileName = ''
