@@ -79,6 +79,12 @@ export class TsFileMap {
       file.version += 1
       file.text = src
     }
+    if (file.srcFileName !== srcFileName) {
+      return {
+          ...file,
+        srcFileName
+      }
+    }
 
     return file
   }
