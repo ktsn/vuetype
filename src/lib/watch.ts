@@ -22,15 +22,15 @@ export function watch (
     .on('add', onlyVue(file => {
       service.updateFile(file)
       saveDts(file, service)
-    }, service))
+    }, service, 'add'))
     .on('change', onlyVue(file => {
       service.updateFile(file)
       saveDts(file, service)
-    }, service))
+    }, service, 'change'))
     .on('unlink', onlyVue(file => {
-      service.updateFile(file)
+      //service.updateFile(file)
       removeDts(file)
-    }, null))
+    }, service, 'unlink'))
 
   return watcher
 }
@@ -62,9 +62,21 @@ function removeDts (fileName: string): void {
     )
 }
 
-function onlyVue (fn: (fileName: string) => void, service: LanguageService | null): (fileName: string) => void {
+function onlyVue (fn: (fileName: string) => void, service: LanguageService, mode: string): (fileName: string) => void {
   return fileName => {
-    fileName = service && service.getVueFile(fileName) || fileName
+    switch (mode){
+      case 'change':
+        if (service.hasFile(fileName)) {
+          service.updateFile(fileName)
+        }
+        break
+      case 'unlink':
+        service.unlinkFile(fileName)
+        break
+      default:
+        break
+    }
+    fileName = mode !== 'unlink' && service.getVueFile(fileName) || fileName
     if (!/\.vue$/.test(fileName)) return
     fn(fileName)
   }

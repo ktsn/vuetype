@@ -55,6 +55,18 @@ export class TsFileMap {
     return file && file.rawFileName
   }
 
+  hasFile(fileName: string) {
+    return this.files.has(getRawFileName(fileName))
+  }
+
+  unlinkFile(fileName: string) {
+    fileName = getRawFileName(fileName)
+    if (isVueFile(fileName)) {
+      this.files.delete(fileName + '.ts')
+    }
+    this.files.delete(fileName)
+  }
+
   /**
    * Load a TS file that specifed by the argument
    * If .vue file is specified, it extract and retain TS code part only.
@@ -104,8 +116,7 @@ export class TsFileMap {
   private registerFile (file: TsFile): void {
     const { rawFileName } = file
 
-    let s = isVueFile(rawFileName) ? (rawFileName + '.ts') : rawFileName
-    let oldFile = this.files.get(s)
+    let oldFile = this.files.get(rawFileName)
     if (oldFile && oldFile.srcFileName && this.srcFiles.has(oldFile.srcFileName))
     {
       this.srcFiles.delete(oldFile.srcFileName)
@@ -157,6 +168,7 @@ function isVueFile (fileName: string): boolean {
 
 // If fileName is already suffixed by `.ts` remove it
 function getRawFileName (fileName: string): string {
+  fileName = resolve(fileName)
   if (/\.vue\.ts$/.test(fileName)) {
     return fileName.slice(0, -3)
   }
