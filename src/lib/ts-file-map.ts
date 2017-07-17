@@ -104,7 +104,8 @@ export class TsFileMap {
   private registerFile (file: TsFile): void {
     const { rawFileName } = file
 
-    let oldFile = this.files.get(rawFileName)
+    let s = isVueFile(rawFileName) ? (rawFileName + '.ts') : rawFileName
+    let oldFile = this.files.get(s)
     if (oldFile && oldFile.srcFileName && this.srcFiles.has(oldFile.srcFileName))
     {
       this.srcFiles.delete(oldFile.srcFileName)
