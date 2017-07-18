@@ -110,6 +110,7 @@ export class TsFileMap {
    *   - Loaded but not found or unsupported
    */
   private getFile (fileName: string): TsFile | undefined {
+    fileName = resolve(fileName)
     return this.files.get(fileName)
   }
 
