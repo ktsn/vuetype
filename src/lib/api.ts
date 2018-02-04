@@ -3,7 +3,7 @@ import { generate as _generate } from './generate'
 import { watch as _watch } from './watch'
 import { readConfig } from './config'
 
-export function generate (filenames: string[], configPath: string): Promise<never> {
+export function generate (filenames: string[], configPath: string): Promise<void> {
   const config = readConfig(configPath)
   return _generate(filenames, config ? config.options : {})
 }

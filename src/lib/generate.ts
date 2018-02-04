@@ -6,7 +6,7 @@ import { LanguageService } from './language-service'
 import { writeFile } from './file-util'
 import { logEmitted, logError } from './logger'
 
-export function generate (filenames: string[], options: ts.CompilerOptions): Promise<never> {
+export function generate (filenames: string[], options: ts.CompilerOptions): Promise<void> {
   const vueFiles = filenames
     .filter(file => /\.vue$/.test(file))
     .map(file => path.resolve(file))
@@ -35,5 +35,5 @@ export function generate (filenames: string[], options: ts.CompilerOptions): Pro
           logEmitted(dtsPath)
         })
     })
-  )
+  ).then(() => { return })
 }
