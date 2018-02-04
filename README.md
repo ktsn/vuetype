@@ -32,7 +32,7 @@ For example, if there is the following component:
 </template>
 
 <script lang="ts">
-import Vue = require('vue')
+import Vue from 'vue'
 import Component from 'vue-class-component'
 
 @Component
@@ -45,7 +45,7 @@ export default class MyComp extends Vue {
 You will acquire the following declaration file:
 
 ```ts
-import Vue = require('vue');
+import Vue from 'vue';
 export default class MyComp extends Vue {
     message: string;
 }
