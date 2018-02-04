@@ -68,6 +68,12 @@ describe('generate', () => {
       test(fixtures('src.vue.d.ts'), expects('src.vue.d.ts'))
     })
   })
+
+  it('should be able to import other vue files', () => {
+    return gen(fixtures('import-other.vue'), compilerOptions).then(() => {
+      test(fixtures('import-other.vue.d.ts'), expects('import-other.vue.d.ts'))
+    })
+  })
 })
 
 function normalize (str: string): string {

@@ -1,4 +1,5 @@
 import ts = require('typescript')
+import path = require('path')
 import { TsFileMap } from './ts-file-map'
 
 export interface Result<T> {
@@ -35,8 +36,9 @@ export class LanguageService {
     }
 
     const output = this.tsService.getEmitOutput(fileName, true)
+    const errors = this.collectErrorMessages(fileName)
 
-    if (!output.emitSkipped) {
+    if (errors.length === 0) {
       const result = output.outputFiles
         .filter(file => /\.d\.ts$/.test(file.name))[0].text
 
@@ -48,7 +50,7 @@ export class LanguageService {
 
     return {
       result: null,
-      errors: this.collectErrorMessages(fileName)
+      errors
     }
   }
 
@@ -65,6 +67,12 @@ export class LanguageService {
       getDefaultLibFileName: options => ts.getDefaultLibFilePath(options),
       resolveModuleNames: (moduleNames, containingFile) => {
         return moduleNames.map(name => {
+          if (/\.vue$/.test(name)) {
+            return {
+              resolvedFileName: normalize(path.resolve(path.dirname(containingFile), name)),
+              extension: ts.Extension.Ts
+            }
+          }
           return ts.resolveModuleName(name, containingFile, options, ts.sys).resolvedModule
         })
       }
