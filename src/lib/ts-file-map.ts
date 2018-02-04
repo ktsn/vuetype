@@ -1,4 +1,5 @@
 import assert = require('assert')
+import path = require('path')
 import ts = require('typescript')
 import vueCompiler = require('vue-template-compiler')
 import { readFileSync, exists } from './file-util'
@@ -62,7 +63,7 @@ export class TsFileMap {
 
     let src = readFileSync(rawFileName)
     if (src && isVueFile(rawFileName)) {
-      src = extractCode(src)
+      src = extractCode(src, fileName)
     }
 
     if (src !== file.text) {
@@ -102,11 +103,22 @@ export class TsFileMap {
  * Extract TS code from single file component
  * If there are no TS code, return undefined
  */
-function extractCode (src: string): string | undefined {
+function extractCode (src: string, fileName: string): string | undefined {
   const script = vueCompiler.parseComponent(src, { pad: true }).script
-  if (script == null || script.lang !== 'ts') {
+  if (script == null) {
     return undefined
   }
+
+  // Load an external TS file if it referred via src attribute.
+  if (script.src && isSupportedFile(script.src)) {
+    const srcFileName = path.resolve(path.dirname(fileName), script.src)
+    return readFileSync(srcFileName)
+  }
+
+  if (script.lang !== 'ts') {
+    return undefined
+  }
+
   return script.content
 }
 

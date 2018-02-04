@@ -62,6 +62,12 @@ describe('generate', () => {
       test(fixtures('import.vue.d.ts'), expects('import.vue.d.ts'))
     })
   })
+
+  it('should emit d.ts of ts file referred via src attribute', () => {
+    return gen(fixtures('src.vue'), compilerOptions).then(() => {
+      test(fixtures('src.vue.d.ts'), expects('src.vue.d.ts'))
+    })
+  })
 })
 
 function normalize (str: string): string {
