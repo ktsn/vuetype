@@ -7,9 +7,6 @@
     "lib": [
       "es2015"
     ],
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "strictNullChecks": true
+    "strict": true
   }
 }

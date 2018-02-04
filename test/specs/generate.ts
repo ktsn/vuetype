@@ -12,7 +12,7 @@ const compilerOptions: ts.CompilerOptions = {
   experimentalDecorators: true
 }
 
-function gen(fileName: string, options: ts.CompilerOptions): Promise<never> {
+function gen(fileName: string, options: ts.CompilerOptions): Promise<void> {
   return generate([fileName], options)
 }
 

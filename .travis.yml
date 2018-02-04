@@ -8,4 +8,6 @@ cache:
 install:
   - npm i --cache-min 600000
 script:
-  - echo
+  - npm run lint
+  - npm run test
+  - npm run build

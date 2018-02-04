@@ -5,6 +5,8 @@ import rimraf = require('rimraf')
 import chokidar = require('chokidar')
 import { watch } from '../../src/lib/watch'
 
+const noop = () => {/* noop */}
+
 const p = (_path: string) => path.resolve(__dirname, '../.tmp', _path)
 
 describe('watch', () => {
@@ -27,13 +29,13 @@ describe('watch', () => {
       done()
     }))
 
-    fs.writeFile(p('test.vue'), vue('export const test: string = ""'))
+    fs.writeFile(p('test.vue'), vue('export const test: string = ""'), noop)
   })
 
   it('updates d.ts if .vue file is updated', done => {
     watcher.on('add', once(() => {
       test(p('test.vue.d.ts'), 'export declare const test: string;')
-      fs.writeFile(p('test.vue'), vue('export const foo: number = 1'))
+      fs.writeFile(p('test.vue'), vue('export const foo: number = 1'), noop)
     }))
 
     watcher.on('change', once(() => {
@@ -41,13 +43,13 @@ describe('watch', () => {
       done()
     }))
 
-    fs.writeFile(p('test.vue'), vue('export const test: string = ""'))
+    fs.writeFile(p('test.vue'), vue('export const test: string = ""'), noop)
   })
 
   it('removes d.ts if corresponding .vue file is removed', done => {
     watcher.on('add', once(() => {
       assert.ok(fs.existsSync(p('test.vue.d.ts')))
-      fs.unlink(p('test.vue'))
+      fs.unlink(p('test.vue'), noop)
     }))
 
     watcher.on('unlink', once(() => {
@@ -55,7 +57,7 @@ describe('watch', () => {
       done()
     }))
 
-    fs.writeFile(p('test.vue'), vue('export const test: string = ""'))
+    fs.writeFile(p('test.vue'), vue('export const test: string = ""'), noop)
   })
 
   it('allows re-add .vue file', done => {
@@ -67,7 +69,7 @@ describe('watch', () => {
       done()
     }))
 
-    fs.writeFile(p('test.vue'), vue('export declare let b: boolean'))
+    fs.writeFile(p('test.vue'), vue('export declare let b: boolean'), noop)
   })
 })
 

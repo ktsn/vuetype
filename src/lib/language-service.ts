@@ -62,7 +62,12 @@ export class LanguageService {
       },
       getCurrentDirectory: () => process.cwd(),
       getCompilationSettings: () => options,
-      getDefaultLibFileName: options => ts.getDefaultLibFilePath(options)
+      getDefaultLibFileName: options => ts.getDefaultLibFilePath(options),
+      resolveModuleNames: (moduleNames, containingFile) => {
+        return moduleNames.map(name => {
+          return ts.resolveModuleName(name, containingFile, options, ts.sys).resolvedModule
+        })
+      }
     } as ts.LanguageServiceHost
   }
 

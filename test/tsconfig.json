@@ -2,11 +2,11 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../.tmp",
+    "experimentalDecorators": true,
     "sourceMap": true
   },
   "include": [
     "**/*.ts",
-    "../src/**/*.ts",
-    "../node_modules/@types/mocha/index.d.ts"
+    "../src/**/*.ts"
   ]
 }
