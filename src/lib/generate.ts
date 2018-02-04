@@ -1,5 +1,3 @@
-import 'colors'
-
 import path = require('path')
 import ts = require('typescript')
 import { LanguageService } from './language-service'

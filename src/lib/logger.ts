@@ -1,15 +1,17 @@
+import chalk from 'chalk'
+
 export function logEmitted (filePath: string): void {
-  console.log('Emitted: '.green + filePath)
+  console.log(chalk.green('Emitted: ') + filePath)
 }
 
 export function logRemoved (filePath: string): void {
-  console.log('Removed: '.green + filePath)
+  console.log(chalk.green('Removed: ') + filePath)
 }
 
 export function logError (filePath: string, messages: string[]): void {
   const errors = [
-    'Emit Failed: '.red + filePath,
-    ...messages.map(m => '  ' + 'Error: '.red + m)
+    chalk.red('Emit Failed: ') + filePath,
+    ...messages.map(m => '  ' + chalk.red('Error: ') + m)
   ]
   console.error(errors.join('\n'))
 }
