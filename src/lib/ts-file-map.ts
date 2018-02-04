@@ -1,16 +1,18 @@
 import assert = require('assert')
 import ts = require('typescript')
 import vueCompiler = require('vue-template-compiler')
-import { readFileSync, exists } from './file-util'
+import { readFileSync, exists, resolve } from './file-util'
 
 export interface TsFile {
   rawFileName: string
+  srcFileName?: string
   version: number
   text: string | undefined
 }
 
 export class TsFileMap {
   private files = new Map<string, TsFile>()
+  private srcFiles = new Map<string, TsFile>()
 
   get fileNames (): string[] {
     return Array.from(this.files.keys()).filter(file => isSupportedFile(file))
@@ -48,6 +50,23 @@ export class TsFileMap {
     this.registerFile(file)
   }
 
+  getVueFile(fileName: string) {
+    let file = this.srcFiles.get(resolve(fileName))
+    return file && file.rawFileName
+  }
+
+  hasFile(fileName: string) {
+    return this.files.has(getRawFileName(fileName))
+  }
+
+  unlinkFile(fileName: string) {
+    fileName = getRawFileName(fileName)
+    if (isVueFile(fileName)) {
+      this.files.delete(fileName + '.ts')
+    }
+    this.files.delete(fileName)
+  }
+
   /**
    * Load a TS file that specifed by the argument
    * If .vue file is specified, it extract and retain TS code part only.
@@ -61,13 +80,22 @@ export class TsFileMap {
     }
 
     let src = readFileSync(rawFileName)
+    let srcFileName: string | undefined
     if (src && isVueFile(rawFileName)) {
-      src = extractCode(src)
+      let code = extractCode(src, rawFileName)
+      src = code.content
+      srcFileName = code.srcFileName
     }
 
-    if (src !== file.text) {
+    if (src !== file.text || file.srcFileName !== srcFileName) {
       file.version += 1
       file.text = src
+    }
+    if (file.srcFileName !== srcFileName) {
+      return {
+          ...file,
+        srcFileName
+      }
     }
 
     return file
@@ -82,16 +110,27 @@ export class TsFileMap {
    *   - Loaded but not found or unsupported
    */
   private getFile (fileName: string): TsFile | undefined {
+    fileName = resolve(fileName)
     return this.files.get(fileName)
   }
 
   private registerFile (file: TsFile): void {
     const { rawFileName } = file
 
+    let oldFile = this.files.get(rawFileName)
+    if (oldFile && oldFile.srcFileName && this.srcFiles.has(oldFile.srcFileName))
+    {
+      this.srcFiles.delete(oldFile.srcFileName)
+    }
+
     if (isVueFile(rawFileName)) {
       // To ensure the compiler can process .vue file,
       // we need to add .ts suffix to file name
       this.files.set(rawFileName + '.ts', file)
+    }
+
+    if (file.srcFileName) {
+      this.srcFiles.set(file.srcFileName, file)
     }
 
     this.files.set(rawFileName, file)
@@ -102,12 +141,22 @@ export class TsFileMap {
  * Extract TS code from single file component
  * If there are no TS code, return undefined
  */
-function extractCode (src: string): string | undefined {
+function extractCode (src: string, rawFileName: string): { content?: string, srcFileName?: string } {
   const script = vueCompiler.parseComponent(src, { pad: true }).script
   if (script == null || script.lang !== 'ts') {
-    return undefined
+    return {}
   }
-  return script.content
+  let content: string | undefined
+  let srcFileName: string | undefined
+  if (script.src) {
+    let srcFile = resolve(rawFileName, '..', script.src)
+    content = readFileSync(srcFile)
+    srcFileName = srcFile
+  }else{
+    content = script.content
+    srcFileName = ''
+  }
+  return { content, srcFileName }
 }
 
 function isSupportedFile (fileName: string): boolean {
@@ -120,6 +169,7 @@ function isVueFile (fileName: string): boolean {
 
 // If fileName is already suffixed by `.ts` remove it
 function getRawFileName (fileName: string): string {
+  fileName = resolve(fileName)
   if (/\.vue\.ts$/.test(fileName)) {
     return fileName.slice(0, -3)
   }

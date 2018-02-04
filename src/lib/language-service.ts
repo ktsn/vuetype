@@ -23,6 +23,18 @@ export class LanguageService {
     this.files.updateFile(fileName)
   }
 
+  getVueFile(fileName: string): string | undefined {
+    return this.files.getVueFile(fileName)
+  }
+
+  hasFile(fileName: string): boolean {
+    return this.files.hasFile(fileName)
+  }
+
+  unlinkFile(fileName: string): void {
+    this.files.unlinkFile(fileName)
+  }
+
   getDts (fileName: string): Result<string> {
     fileName = normalize(fileName)
 
