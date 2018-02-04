@@ -74,7 +74,7 @@ export class LanguageService {
     return allDiagnostics.map(diagnostic => {
       const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')
 
-      if (diagnostic.file) {
+      if (diagnostic.file && diagnostic.start) {
         const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start)
         return `[${line + 1},${character + 1}] ${message}`
       }
