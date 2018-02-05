@@ -6,6 +6,7 @@ import { readFileSync, exists } from './file-util'
 
 export interface TsFile {
   rawFileName: string
+  srcPath: string | undefined
   version: number
   text: string | undefined
 }
@@ -39,6 +40,24 @@ export class TsFileMap {
     return file.text
   }
 
+  /**
+   * Collect host vue file paths of input ts file.
+   * If the input is a vue file, just return it.
+   */
+  getHostVueFilePaths (fileName: string): string[] {
+    if (/\.vue$/.test(fileName)) {
+      return [fileName]
+    }
+
+    const entries = Array.from(this.files.entries())
+    return entries
+      .filter(([key, file]) => {
+        return !/\.vue$/.test(key)
+          && file.srcPath === fileName
+      })
+      .map(([_, file]) => file.rawFileName)
+  }
+
   getVersion (fileName: string): string | undefined {
     const file = this.getFile(fileName)
     return file && file.version.toString()
@@ -57,13 +76,16 @@ export class TsFileMap {
     const rawFileName = getRawFileName(fileName)
     const file = this.getFile(fileName) || {
       rawFileName,
+      srcPath: undefined,
       version: 0,
       text: undefined
     }
 
     let src = readFileSync(rawFileName)
     if (src && isVueFile(rawFileName)) {
-      src = extractCode(src, fileName)
+      const extracted = extractCode(src, fileName)
+      src = extracted.content
+      file.srcPath = extracted.srcPath
     }
 
     if (src !== file.text) {
@@ -103,23 +125,35 @@ export class TsFileMap {
  * Extract TS code from single file component
  * If there are no TS code, return undefined
  */
-function extractCode (src: string, fileName: string): string | undefined {
+function extractCode (
+  src: string,
+  fileName: string
+): {
+  content: string | undefined,
+  srcPath: string | undefined
+} {
   const script = vueCompiler.parseComponent(src, { pad: true }).script
-  if (script == null) {
-    return undefined
+
+  if (script == null || script.lang !== 'ts') {
+    return {
+      content: undefined,
+      srcPath: undefined
+    }
   }
 
   // Load an external TS file if it referred via src attribute.
   if (script.src && isSupportedFile(script.src)) {
-    const srcFileName = path.resolve(path.dirname(fileName), script.src)
-    return readFileSync(srcFileName)
+    const srcPath = path.resolve(path.dirname(fileName), script.src)
+    return {
+      content: readFileSync(srcPath),
+      srcPath
+    }
   }
 
-  if (script.lang !== 'ts') {
-    return undefined
+  return {
+    content: script.content,
+    srcPath: undefined
   }
-
-  return script.content
 }
 
 function isSupportedFile (fileName: string): boolean {

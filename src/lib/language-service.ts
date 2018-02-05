@@ -24,6 +24,10 @@ export class LanguageService {
     this.files.updateFile(fileName)
   }
 
+  getHostVueFilePaths (fileName: string): string[] {
+    return this.files.getHostVueFilePaths(fileName)
+  }
+
   getDts (fileName: string): Result<string> {
     fileName = normalize(fileName)
 

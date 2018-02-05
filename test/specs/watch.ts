@@ -71,6 +71,31 @@ describe('watch', () => {
 
     fs.writeFile(p('test.vue'), vue('export declare let b: boolean'), noop)
   })
+
+  it('watches addition of derived ts file via .vue file', done => {
+    fs.writeFileSync(p('test.vue'), vue('', { src: 'test-src.ts' }))
+
+    watcher.on('add', once(() => {
+      test(p('test.vue.d.ts'), 'export declare const test: string;')
+      done()
+    }))
+
+    fs.writeFileSync(p('test-src.ts'), 'export const test: string = ""')
+  })
+
+  it('watches changes of derived ts file via .vue file', done => {
+    fs.writeFileSync(p('test.vue'), vue('', { src: 'test-src.ts' }))
+    fs.writeFileSync(p('test-src.ts'), 'export const a: number = 123')
+
+    watcher.on('add', once(() => {
+      fs.writeFile(p('test-src.ts'), 'export const b: string = ""', noop)
+    }))
+
+    watcher.on('change', once(() => {
+      test(p('test.vue.d.ts'), 'export declare const b: string;')
+      done()
+    }))
+  })
 })
 
 function once (fn: () => void): (p: string) => void {
@@ -91,6 +116,12 @@ function test (file: string, expected: string) {
   )
 }
 
-function vue (code: string): string {
-  return '<script lang="ts">' + code + '</script>'
+function vue (code: string, attrs: Record<string, string> = {}): string {
+  const attrsStr = Object.keys(attrs)
+    .map(key => {
+      return `${key}="${attrs[key]}"`
+    })
+    .join(' ')
+
+  return '<script lang="ts" ' + attrsStr + '>' + code + '</script>'
 }
