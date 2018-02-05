@@ -19,18 +19,24 @@ export function watch (
   })
 
   watcher
-    .on('add', onlyVue(file => {
-      service.updateFile(file)
-      saveDts(file, service)
-    }))
-    .on('change', onlyVue(file => {
-      service.updateFile(file)
-      saveDts(file, service)
-    }))
-    .on('unlink', onlyVue(file => {
-      service.updateFile(file)
-      removeDts(file)
-    }))
+    .on('add', rawFile => {
+      service.getHostVueFilePaths(rawFile).forEach(file => {
+        service.updateFile(file)
+        saveDts(file, service)
+      })
+    })
+    .on('change', rawFile => {
+      service.getHostVueFilePaths(rawFile).forEach(file => {
+        service.updateFile(file)
+        saveDts(file, service)
+      })
+    })
+    .on('unlink', rawFile => {
+      service.getHostVueFilePaths(rawFile).forEach(file => {
+        service.updateFile(file)
+        removeDts(file)
+      })
+    })
 
   return watcher
 }
@@ -62,9 +68,3 @@ function removeDts (fileName: string): void {
     )
 }
 
-function onlyVue (fn: (fileName: string) => void): (fileName: string) => void {
-  return fileName => {
-    if (!/\.vue$/.test(fileName)) return
-    fn(fileName)
-  }
-}
