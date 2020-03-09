@@ -13,7 +13,9 @@ export function generate (filenames: string[], options: ts.CompilerOptions): Pro
   const service = new LanguageService(vueFiles, {
     ...options,
     declaration: true,
-    noEmitOnError: true
+    noEmitOnError: true,
+    // ignore compilerOptions.types
+    types: []
   })
 
   return Promise.all(
