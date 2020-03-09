@@ -10,7 +10,7 @@ const expects = (...parts: string[]) => path.join(testDir, 'expects', ...parts)
 
 const compilerOptions: ts.CompilerOptions = {
   experimentalDecorators: true,
-  types: ["node"]
+  types: ['node']
 }
 
 function gen(fileName: string, options: ts.CompilerOptions): Promise<void> {
